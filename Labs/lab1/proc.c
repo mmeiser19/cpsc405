@@ -47,6 +47,13 @@ char *state_to_string(enum procstate ps) {
  */
 struct proc *find_proc(int pid) {
     // design and implement this function
+    struct proc *cur = kernel_proc;
+    while (cur != NULL) {
+        if (cur->pid == pid) {
+            return cur;
+        }
+        cur = cur->next;
+    }
     return NULL;
 }
 
@@ -92,7 +99,18 @@ void print_procs() {
  */
 struct proc *new_proc(char name[], uint priority, int ppid) {
     // design and implement this function
-    return NULL;
+    //struct proc *p = malloc(sizeof(struct proc));
+    struct proc *p = calloc(1, sizeof(struct proc));
+    p->priority = priority;
+    p->pid = pid++;
+    p->state = EMBRYO;
+    strcpy(p->name, name);
+    if (ppid != 0) {
+        p->parent = find_proc(ppid);
+    }
+    p->next = 0;
+    p->prev = 0;
+    return p;
 }
 
 /*
@@ -100,6 +118,21 @@ struct proc *new_proc(char name[], uint priority, int ppid) {
  */
 bool enqueue_proc(struct proc *p) {
     // design and implement this function
+    struct proc *cur = kernel_proc;
+    struct proc *prev = 0;
+    while (cur != NULL) {
+        if (p->priority < cur->priority) {
+            p->next = cur;
+            p->prev = prev;
+            cur->prev = p; // cur->prev->next = p;
+            prev->next = p;
+            return true;
+        }
+        prev = cur;
+        cur = cur->next;
+    }
+    prev->next = p;
+    p->prev = prev;
     return true;
 }
 
@@ -117,6 +150,26 @@ void bootstrap() {
  */
 bool kill(int pid) {
     // design and implement this function
+    struct proc *p = find_proc(pid);
+    if (p->next == NULL) {
+        struct proc *prev = p->prev;
+        prev->next = NULL;
+    }
+    else {
+        if (p->prev == NULL) {
+            struct proc *next = p->next;
+            next->prev = NULL;
+        }
+        else {
+            struct proc *prev = p->prev;
+            struct proc *next = p->next;
+            prev->next = next;
+            next->prev = prev;
+        }
+    }
+    p->killed = 1;
+    p->next = NULL;
+    p->prev = NULL;
     return true;
 }
 
@@ -126,6 +179,13 @@ bool kill(int pid) {
  */
 int get_pid(char name[]) {
     // design and implement this function
+    struct proc *cur = kernel_proc;
+    while (cur != NULL) {
+        if (strcmp(cur->name, name) == 0) {
+            return cur->pid;
+        }
+        cur = cur->next;
+    }
     return 0;
 
 }
