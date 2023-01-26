@@ -35,7 +35,7 @@ struct Options get_opts(int count, char* args[]) {
             case 'd': opts.using_d = true; break;
             case 'f': 
                 opts.using_f = true; 
-                strcpy(opts.filename, optarg); 
+                strcpy(opts.filename, optarg);
                 break;
             case ':': 
                 printf("-f needs a value\n");
@@ -45,7 +45,6 @@ struct Options get_opts(int count, char* args[]) {
                 exit(-1);
         }
     }
-
     return opts;
 }
 

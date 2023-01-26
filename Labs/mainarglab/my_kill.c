@@ -1,4 +1,6 @@
+#include <errno.h>
 #include <getopt.h>
+#include <signal.h>
 #include <stdio.h>
 #include <stdbool.h>
 #include <stdlib.h>
@@ -33,17 +35,16 @@ struct Options get_opts(int count, char* args[]) {
             case 'f':
                 opts.using_f = true;
                 strcpy(opts.filename, optarg);
-                // need to ensure that the argument following -f is a file
-                // currently allowing pid to be read in as the filename
+                // check if the file doesn't exist
+                if (access(opts.filename, F_OK) == -1) {
+                    printf("File doesn't exist\n");
+                    return opts;
+                }
                 printf("Printing file %s\n", opts.filename);
                 // print out contents of file
                 FILE *fp;
                 char c;
                 fp = fopen(opts.filename, "r");
-                if (fp == NULL) {
-                    printf("Could not open file %s", opts.filename);
-                    exit(-1);
-                }
                 for (c = getc(fp); c != EOF; c = getc(fp))
                     putchar(c);
                 fclose(fp);
@@ -69,5 +70,15 @@ int main(int argc, char *argv[]) {
 
     struct Options o = get_opts(argc, argv);
     printf("my_kill pid: %d\n", getpid()); // get my_kill’s pid
+
+    // kill the process
+    int pid_to_kill = pid; // get the pid to kill
+    int status = kill(pid_to_kill, SIGINT);
+    int errnum = errno;
+    if (status == -1) {
+        fprintf(stderr, "Value of errno: %d\n", errno);
+        perror("Error printed by perror");
+        fprintf(stderr, "Error killing process: %s\n", strerror(errnum));
+    }
     return 0;
 }
