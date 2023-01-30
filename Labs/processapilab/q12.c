@@ -15,8 +15,8 @@ int main(int argc, char **argv) {
         dup2(p[1], 1); // dup pipe write end on top of stdout
         close(p[0]);   // close pipe fd's
         close(p[1]);
-        excargv[0] = "ls";
-        excargv[1] = 0;
+        excargv[0] = "cat";
+        excargv[1] = "p7.c";
         execvp(excargv[0], excargv);
         printf("HERE\n");
     }
@@ -30,7 +30,7 @@ int main(int argc, char **argv) {
             if (argc == 2)
                 excargv[1] = argv[1];
             else
-                excargv[1] = "p1";
+                excargv[1] = "close";
             excargv[2] = 0;
             execvp(excargv[0], excargv);
         }
