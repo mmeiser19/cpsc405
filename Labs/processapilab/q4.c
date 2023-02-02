@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <sys/wait.h>
-#include <stdlib.h>
 
 int main()
 {
@@ -17,7 +16,7 @@ int main()
 
         // ***************** Uncomment only 1 of these ************************ /
 
-        //execl("/bin/ls", "ls", NULL);
+        execl("/bin/ls", "ls", NULL);
         //execlp("ls", "ls", NULL);
         //execle("/bin/ls", "ls", NULL, envp);
 

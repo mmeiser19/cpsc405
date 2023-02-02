@@ -2,7 +2,6 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
-#include <fcntl.h>
 #include <sys/wait.h>
 #define BUFSZE 32
 
@@ -25,7 +24,7 @@ int main(int argc, char *argv[]) {
         printf(" Child #1 ");
         close(p[0]);   // This one only writes
         dup2(p[1], 1); // redirect stdout to pipe write
-        printf("_This is getting sent to the pipe_");
+        printf("_This is getting sent to the pipe_\n");
     }
     else {
         // Parent process
@@ -36,7 +35,7 @@ int main(int argc, char *argv[]) {
         }
         else if (rc2 == 0) {
             // Child #2
-            printf(" Child #2 ");
+            printf(" Child #2 \n");
             close(p[1]);      // Only read here
             dup2(p[0], 0);    // Redirect stdin to pipe read
 
@@ -49,7 +48,7 @@ int main(int argc, char *argv[]) {
 
             char buff[512];   // Make a buffer
             read(STDIN_FILENO, buff, 512); // Read in from stdin
-            printf("%s", buff);     // Print out buffer
+            printf("%s\n", buff);     // Print out buffer
 
         }
         else {
@@ -58,7 +57,7 @@ int main(int argc, char *argv[]) {
              * giving us some strange behavior. */
 
             int wc = waitpid(rc2, NULL, 0);
-            printf("goodbye");
+            printf("goodbye\n");
         }
     }
     return 0;
